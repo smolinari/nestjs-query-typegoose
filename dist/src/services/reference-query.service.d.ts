@@ -1,0 +1,36 @@
+import { Document, DocumentToObjectOptions } from 'mongoose';
+import { AggregateQuery, AggregateResponse, Class, DeepPartial, Filter, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query, UpdateOneOptions } from '@nestjs-query/core';
+import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
+import { Base } from '@typegoose/typegoose/lib/defaultClasses';
+import { FilterQueryBuilder } from '../query';
+import { TypegooseQueryServiceOpts } from './typegoose-query-service';
+export declare abstract class ReferenceQueryService<Entity extends Base> {
+    readonly Model: ReturnModelType<new () => Entity>;
+    protected readonly documentToObjectOptions: DocumentToObjectOptions;
+    abstract readonly filterQueryBuilder: FilterQueryBuilder<Entity>;
+    constructor(Model: ReturnModelType<new () => Entity>, opts?: TypegooseQueryServiceOpts);
+    abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>;
+    abstract updateOne(id: string, update: DeepPartial<Entity>, opts?: UpdateOneOptions<Entity>): Promise<Entity>;
+    findRelation<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DocumentType<Entity>[], opts?: FindRelationOptions<Relation>): Promise<Map<Entity, Relation | undefined>>;
+    findRelation<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, opts?: FindRelationOptions<Relation>): Promise<DocumentType<Relation> | undefined>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], query: Query<Relation>): Promise<Map<DocumentType<Entity>, DocumentType<Relation>[]>>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, query: Query<Relation>): Promise<DocumentType<Relation>[]>;
+    aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<Map<DocumentType<Entity>, AggregateResponse<Relation>>>;
+    aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<AggregateResponse<DocumentType<Relation>>>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], filter: Filter<Relation>): Promise<Map<DocumentType<Entity>, number>>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, filter: Filter<Relation>): Promise<number>;
+    addRelations<Relation>(relationName: string, id: string, relationIds: (string | number)[], opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
+    setRelation<Relation>(relationName: string, id: string | number, relationId: string | number, opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
+    removeRelation<Relation>(relationName: string, id: string | number, relationId: string | number, opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
+    removeRelations<Relation>(relationName: string, id: string | number, relationIds: string[] | number[], opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
+    private isReferencePath;
+    private isVirtualPath;
+    private getReferenceFilter;
+    private getObjectIdReferenceFilter;
+    private getVirtualReferenceFilter;
+    private getReferenceModel;
+    private getRefCount;
+    static getReferenceQueryBuilder<Ref extends Document>(): FilterQueryBuilder<Ref>;
+    private checkForReference;
+    private findAndUpdate;
+}
