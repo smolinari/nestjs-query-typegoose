@@ -3,6 +3,20 @@ export declare type ReferenceOptions = {
     type: SchemaType;
     ref: string;
 };
+export declare type UpdateArrayQuery<T> = {
+    $addToSet: {
+        [key: string]: {
+            $each: T[];
+        };
+    };
+    $pull: {
+        [key: string]: {
+            [key: string]: {
+                $in: T[keyof T][];
+            };
+        };
+    };
+};
 export declare function isReferenceOptions(options: unknown): options is ReferenceOptions;
 export declare type SchemaTypeWithReferenceOptions = {
     options: ReferenceOptions;

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypegooseQueryService = void 0;
+const typegoose_1 = require("@typegoose/typegoose");
 const common_1 = require("@nestjs/common");
 const reference_query_service_1 = require("./reference-query.service");
 const query_1 = require("../query");
@@ -195,13 +196,46 @@ class TypegooseQueryService extends reference_query_service_1.ReferenceQueryServ
         }
     }
     getUpdateQuery(entity) {
+        const arrayUpdateQuery = this.buildArrayUpdateQuery(entity);
         if (entity instanceof this.Model) {
             return entity.modifiedPaths().reduce((update, k) => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 return { ...update, [k]: entity.get(k) };
             }, {});
         }
-        return entity;
+        return { ...entity, ...arrayUpdateQuery };
+    }
+    buildArrayUpdateQuery(entity) {
+        let query;
+        Object.keys(entity).forEach((key) => {
+            if (this.Model.schema.path(key) instanceof typegoose_1.mongoose.Schema.Types.Array &&
+                typeof entity[key] === 'object') {
+                // Converting the type of the object as it has the custom array input type.
+                const convert = entity[key];
+                if (Object.prototype.hasOwnProperty.call(convert, 'push')) {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    query.$addToSet[key].$each = convert.push;
+                }
+                if (Object.prototype.hasOwnProperty.call(convert, 'pull')) {
+                    convert.pull.forEach((item, index) => {
+                        Object.keys(item).forEach((innerKey) => {
+                            if (query.$pull[key][innerKey]) {
+                                query.$pull[key][innerKey].$in.push(convert.pull[index][innerKey]);
+                            }
+                            else {
+                                query.$pull[key][innerKey] = { $in: [convert.pull[index][innerKey]] };
+                            }
+                        });
+                    });
+                }
+                if (Object.prototype.hasOwnProperty.call(entity[key], 'push') ||
+                    Object.prototype.hasOwnProperty.call(entity[key], 'pull')) {
+                    // eslint-disable-next-line no-param-reassign
+                    delete entity[key];
+                }
+            }
+            return query;
+        });
     }
 }
 exports.TypegooseQueryService = TypegooseQueryService;

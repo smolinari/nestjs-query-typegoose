@@ -131,4 +131,5 @@ export declare class TypegooseQueryService<Entity extends Base> extends Referenc
     deleteMany(filter: Filter<Entity>): Promise<DeleteManyResponse>;
     private ensureIdIsNotPresent;
     private getUpdateQuery;
+    private buildArrayUpdateQuery;
 }
