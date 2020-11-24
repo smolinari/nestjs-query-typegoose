@@ -221,10 +221,10 @@ class TypegooseQueryService extends reference_query_service_1.ReferenceQueryServ
                     query.$addToSet[key] = { $each: convert.push };
                 }
                 if (Object.prototype.hasOwnProperty.call(convert, 'pull')) {
+                    query.$pull[key] = {};
                     convert.pull.forEach((item, index) => {
                         Object.keys(item).forEach((innerKey) => {
-                            var _a;
-                            if (query.$pull[key] && ((_a = query.$pull[key]) === null || _a === void 0 ? void 0 : _a[innerKey]) === undefined) {
+                            if (query.$pull[key][innerKey] !== undefined) {
                                 query.$pull[key][innerKey].$in.push(convert.pull[index][innerKey]);
                             }
                             else {
