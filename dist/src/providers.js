@@ -10,8 +10,6 @@ function createTypegooseQueryServiceProvider(model) {
             // initialize default serializer for documents, this is the type that mongoose returns from queries
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             core_1.AssemblerSerializer((obj) => obj.toObject({ virtuals: true }))(ModelClass);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            core_1.AssemblerDeserializer((obj) => new ModelClass(obj))(model);
             return new typegoose_query_service_1.TypegooseQueryService(ModelClass);
         },
         inject: [`${model.name}Model`],
