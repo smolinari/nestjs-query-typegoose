@@ -27,7 +27,7 @@
     "@nestjs/mongoose": "^7.0.0",
     "nestjs-typegoose": "^7.1.38",
     "@typegoose/typegoose": "^7.4.1",
-    "mongoose": "5.10.9",
+    "mongoose": "5.10.18",
     "mongodb": "3.6.3"
   },
   "devDependencies": {
